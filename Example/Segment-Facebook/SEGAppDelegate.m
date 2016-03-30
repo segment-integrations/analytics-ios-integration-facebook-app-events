@@ -7,12 +7,28 @@
 //
 
 #import "SEGAppDelegate.h"
+#import <Analytics/SEGAnalytics.h>
+#import <Segment-Facebook/SEGFacebookIntegrationFactory.h>
 
 @implementation SEGAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    [SEGAnalytics debug:YES];
+    SEGAnalyticsConfiguration *config = [SEGAnalyticsConfiguration configurationWithWriteKey:@"gnjyuUpq7mZYtLM76mwltoiZcDsFpnfY"];
+    
+    // Add any of your bundled integrations.
+    [config use:[SEGFacebookIntegrationFactory instance]];
+    
+    [SEGAnalytics setupWithConfiguration:config];
+    
+    [[SEGAnalytics sharedAnalytics] track:@"App Launched"
+                               properties:@{ @"plan": @"Enterprise" }];
+    
+    [[SEGAnalytics sharedAnalytics] screen:@"Launch"
+                                properties:@{ @"title": @"Launch Screen" }];
+    
     return YES;
 }
 

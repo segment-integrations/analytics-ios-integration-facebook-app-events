@@ -58,28 +58,35 @@
 
 - (void)track:(SEGTrackPayload *)payload
 {
-    // Normal events
-    [FBSDKAppEvents logEvent:payload.event];
-
-    // Revenue & currency tracking
-    NSNumber *revenue = [SEGFacebookIntegration extractRevenue:payload.properties withKey:@"revenue"];
-    NSString *currency = [SEGFacebookIntegration extractCurrency:payload.properties withKey:@"currency"];
-    if (revenue) {
-        [FBSDKAppEvents logPurchase:[revenue doubleValue] currency:currency];
-    }
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+        // Normal events
+        [FBSDKAppEvents logEvent:payload.event];
+        
+        // Revenue & currency tracking
+        NSNumber *revenue = [SEGFacebookIntegration extractRevenue:payload.properties withKey:@"revenue"];
+        NSString *currency = [SEGFacebookIntegration extractCurrency:payload.properties withKey:@"currency"];
+        if (revenue) {
+            [FBSDKAppEvents logPurchase:[revenue doubleValue] currency:currency];
+        }
+    }];
 }
 
 - (void)screen:(SEGScreenPayload *)payload
 {
-    NSString *event = [[NSString alloc] initWithFormat:@"Viewed %@ Screen", payload.name];
-    [FBSDKAppEvents logEvent:event];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+        NSString *event = [[NSString alloc] initWithFormat:@"Viewed %@ Screen", payload.name];
+        [FBSDKAppEvents logEvent:event];
+    }];
+    
 }
 
 #pragma mark - Callbacks for app state changes
 
 - (void)applicationDidBecomeActive
 {
-    [FBSDKAppEvents activateApp];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+        [FBSDKAppEvents activateApp];
+    }];
 }
 
 @end
