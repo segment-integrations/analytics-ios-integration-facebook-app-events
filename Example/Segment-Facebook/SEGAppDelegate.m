@@ -26,8 +26,8 @@
     [[SEGAnalytics sharedAnalytics] track:@"App Launched"
                                properties:@{ @"plan": @"Enterprise" }];
     
-    [[SEGAnalytics sharedAnalytics] screen:@"Launch"
-                                properties:@{ @"title": @"Launch Screen" }];
+    [[SEGAnalytics sharedAnalytics] track:@"Completed Order"
+                                properties:@{ @"title": @"Launch Screen", @"revenue": @14.50 }];
     
     return YES;
 }

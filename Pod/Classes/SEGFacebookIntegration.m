@@ -59,14 +59,22 @@
 - (void)track:(SEGTrackPayload *)payload
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
-        // Normal events
-        [FBSDKAppEvents logEvent:payload.event];
-        
         // Revenue & currency tracking
         NSNumber *revenue = [SEGFacebookIntegration extractRevenue:payload.properties withKey:@"revenue"];
         NSString *currency = [SEGFacebookIntegration extractCurrency:payload.properties withKey:@"currency"];
         if (revenue) {
             [FBSDKAppEvents logPurchase:[revenue doubleValue] currency:currency];
+        
+            // Custom event
+            NSMutableDictionary *properties = [payload.properties mutableCopy];
+            [properties setObject:currency forKey:FBSDKAppEventParameterNameCurrency];
+            [FBSDKAppEvents logEvent:payload.event
+                            valueToSum:[revenue doubleValue]
+                            parameters:properties];
+        }
+        else {
+            [FBSDKAppEvents logEvent:payload.event
+                            parameters:payload.properties];
         }
     }];
 }
