@@ -1,12 +1,12 @@
-#import "SEGFacebookIntegrationFactory.h"
-#import "SEGFacebookIntegration.h"
+#import "SEGFacebookAppEventsIntegrationFactory.h"
+#import "SEGFacebookAppEventsIntegration.h"
 
-@implementation SEGFacebookIntegrationFactory
+@implementation SEGFacebookAppEventsIntegrationFactory
 
 + (id)instance
 {
     static dispatch_once_t once;
-    static SEGFacebookIntegration *sharedInstance;
+    static SEGFacebookAppEventsIntegration *sharedInstance;
     dispatch_once(&once, ^{
         sharedInstance = [[self alloc] init];
     });
@@ -21,7 +21,7 @@
 
 - (id<SEGIntegration>)createWithSettings:(NSDictionary *)settings forAnalytics:(SEGAnalytics *)analytics
 {
-    return [[SEGFacebookIntegration alloc] initWithSettings:settings];
+    return [[SEGFacebookAppEventsIntegration alloc] initWithSettings:settings];
 }
 
 - (NSString *)key

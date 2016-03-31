@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <Analytics/SEGIntegrationFactory.h>
 
-@interface SEGFacebookIntegrationFactory : NSObject<SEGIntegrationFactory>
+@interface SEGFacebookAppEventsIntegrationFactory : NSObject<SEGIntegrationFactory>
 
 + (id)instance;
 

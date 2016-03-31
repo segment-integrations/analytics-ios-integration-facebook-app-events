@@ -1,8 +1,8 @@
-#import "SEGFacebookIntegration.h"
+#import "SEGFacebookAppEventsIntegration.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <Analytics/SEGAnalyticsUtils.h>
 
-@implementation SEGFacebookIntegration
+@implementation SEGFacebookAppEventsIntegration
 
 #pragma mark - Initialization
 
@@ -60,8 +60,8 @@
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
         // Revenue & currency tracking
-        NSNumber *revenue = [SEGFacebookIntegration extractRevenue:payload.properties withKey:@"revenue"];
-        NSString *currency = [SEGFacebookIntegration extractCurrency:payload.properties withKey:@"currency"];
+        NSNumber *revenue = [SEGFacebookAppEventsIntegration extractRevenue:payload.properties withKey:@"revenue"];
+        NSString *currency = [SEGFacebookAppEventsIntegration extractCurrency:payload.properties withKey:@"currency"];
         if (revenue) {
             [FBSDKAppEvents logPurchase:[revenue doubleValue] currency:currency];
         

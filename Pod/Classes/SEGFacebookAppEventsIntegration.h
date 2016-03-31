@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <Analytics/SEGIntegration.h>
 
-@interface SEGFacebookIntegration : NSObject<SEGIntegration>
+@interface SEGFacebookAppEventsIntegration : NSObject<SEGIntegration>
 
 @property(nonatomic, strong) NSDictionary *settings;
 

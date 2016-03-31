@@ -1,10 +1,10 @@
 # Analytics
 
-[![CI Status](http://img.shields.io/travis/segment-integrations/analytics-ios-integration-facebook.svg?style=flat)](https://travis-ci.org/segment-integrations/analytics-ios-integration-facebook)
-[![Version](https://img.shields.io/cocoapods/v/Segment-facebook.svg?style=flat)](http://cocoapods.org/pods/Segment-facebook)
-[![License](https://img.shields.io/cocoapods/l/Segment-facebook.svg?style=flat)](http://cocoapods.org/pods/Segment-facebook)
+[![CI Status](http://img.shields.io/travis/segment-integrations/analytics-ios-integration-facebook-app-events.svg?style=flat)](https://travis-ci.org/segment-integrations/analytics-ios-integration-facebook-app-events)
+[![Version](https://img.shields.io/cocoapods/v/Segment-Facebook-App-Events.svg?style=flat)](http://cocoapods.org/pods/Segment-Facebook-App-Events)
+[![License](https://img.shields.io/cocoapods/l/Segment-Facebook-App-Events.svg?style=flat)](http://cocoapods.org/pods/Segment-Facebook-App-Events)
 
-Facebook integration for analytics-ios.
+Facebook App Events integration for analytics-ios.
 
 ## Installation
 
@@ -12,7 +12,7 @@ Analytics is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your `Podfile`:
 
 ```ruby
-pod "Segment-Facebook"
+pod "Segment-Facebook-App-Events"
 ```
 
 ## License
@@ -31,7 +31,7 @@ WWWWWW||WWWWWW
 
 The MIT License (MIT)
 
-Copyright (c) 2014 Segment, Inc.
+Copyright (c) 2016 Segment, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
