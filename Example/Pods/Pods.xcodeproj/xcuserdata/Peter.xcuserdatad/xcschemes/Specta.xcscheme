@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "45D068D06A3440E151C740F3661DD320"
+               BlueprintIdentifier = "AA4BC319B26B6E62E4A1AE5F70140066"
                BuildableName = "libSpecta.a"
                BlueprintName = "Specta"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "45D068D06A3440E151C740F3661DD320"
+            BlueprintIdentifier = "AA4BC319B26B6E62E4A1AE5F70140066"
             BuildableName = "libSpecta.a"
             BlueprintName = "Specta"
             ReferencedContainer = "container:Pods.xcodeproj">

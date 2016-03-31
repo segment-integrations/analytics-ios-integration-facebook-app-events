@@ -1,11 +1,11 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
 target 'Segment-Facebook_Example', :exclusive => true do
-  pod "Segment-Facebook", :path => "../"
+  pod "Segment-Facebook-App-Events", :path => "../"
 end
 
 target 'Segment-Facebook_Tests', :exclusive => true do
-  pod "Segment-Facebook", :path => "../"
+  pod "Segment-Facebook-App-Events", :path => "../"
 
   pod 'Specta'
   pod 'Expecta'

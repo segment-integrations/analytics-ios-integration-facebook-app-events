@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D954C006EA39C271B80BE6AAFBCD360A"
-               BuildableName = "libPods-Segment-Facebook_Example.a"
-               BlueprintName = "Pods-Segment-Facebook_Example"
+               BlueprintIdentifier = "E1CBAD89568BC38E5ECF730E65860B6C"
+               BuildableName = "libSegment-Facebook-App-Events.a"
+               BlueprintName = "Segment-Facebook-App-Events"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,9 +45,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D954C006EA39C271B80BE6AAFBCD360A"
-            BuildableName = "libPods-Segment-Facebook_Example.a"
-            BlueprintName = "Pods-Segment-Facebook_Example"
+            BlueprintIdentifier = "E1CBAD89568BC38E5ECF730E65860B6C"
+            BuildableName = "libSegment-Facebook-App-Events.a"
+            BlueprintName = "Segment-Facebook-App-Events"
             ReferencedContainer = "container:Pods.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

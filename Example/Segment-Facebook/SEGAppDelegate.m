@@ -8,7 +8,7 @@
 
 #import "SEGAppDelegate.h"
 #import <Analytics/SEGAnalytics.h>
-#import <Segment-Facebook/SEGFacebookIntegrationFactory.h>
+#import <Segment-Facebook-App-Events/SEGFacebookAppEventsIntegrationFactory.h>
 
 @implementation SEGAppDelegate
 
@@ -19,7 +19,7 @@
     SEGAnalyticsConfiguration *config = [SEGAnalyticsConfiguration configurationWithWriteKey:@"gnjyuUpq7mZYtLM76mwltoiZcDsFpnfY"];
     
     // Add any of your bundled integrations.
-    [config use:[SEGFacebookIntegrationFactory instance]];
+    [config use:[SEGFacebookAppEventsIntegrationFactory instance]];
     
     [SEGAnalytics setupWithConfiguration:config];
     
