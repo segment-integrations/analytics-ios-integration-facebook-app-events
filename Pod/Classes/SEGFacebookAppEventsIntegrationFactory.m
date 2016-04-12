@@ -26,7 +26,7 @@
 
 - (NSString *)key
 {
-    return @"Facebook";
+    return @"Facebook App Events";
 }
 
 @end
