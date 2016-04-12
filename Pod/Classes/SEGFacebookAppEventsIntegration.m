@@ -59,6 +59,9 @@
 - (void)track:(SEGTrackPayload *)payload
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+        // FB Event Names must be <= 40 characters
+        NSString *truncatedEvent = [payload.event substringToIndex: MIN(40, [payload.event length])];
+        
         // Revenue & currency tracking
         NSNumber *revenue = [SEGFacebookAppEventsIntegration extractRevenue:payload.properties withKey:@"revenue"];
         NSString *currency = [SEGFacebookAppEventsIntegration extractCurrency:payload.properties withKey:@"currency"];
@@ -68,12 +71,12 @@
             // Custom event
             NSMutableDictionary *properties = [payload.properties mutableCopy];
             [properties setObject:currency forKey:FBSDKAppEventParameterNameCurrency];
-            [FBSDKAppEvents logEvent:payload.event
+            [FBSDKAppEvents logEvent:truncatedEvent
                             valueToSum:[revenue doubleValue]
                             parameters:properties];
         }
         else {
-            [FBSDKAppEvents logEvent:payload.event
+            [FBSDKAppEvents logEvent:truncatedEvent
                             parameters:payload.properties];
         }
     }];
@@ -82,7 +85,10 @@
 - (void)screen:(SEGScreenPayload *)payload
 {
     [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
-        NSString *event = [[NSString alloc] initWithFormat:@"Viewed %@ Screen", payload.name];
+        // FB Event Names must be <= 40 characters
+        // 'Viewed' and 'Screen' with spaces take up 14
+        NSString *truncatedEvent = [payload.name substringToIndex: MIN(26, [payload.name length])];
+        NSString *event = [[NSString alloc] initWithFormat:@"Viewed %@ Screen", truncatedEvent];
         [FBSDKAppEvents logEvent:event];
     }];
     
