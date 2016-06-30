@@ -3,10 +3,10 @@
 
 @implementation SEGFacebookAppEventsIntegrationFactory
 
-+ (id)instance
++ (instancetype)instance
 {
     static dispatch_once_t once;
-    static SEGFacebookAppEventsIntegration *sharedInstance;
+    static SEGFacebookAppEventsIntegrationFactory *sharedInstance;
     dispatch_once(&once, ^{
         sharedInstance = [[self alloc] init];
     });
