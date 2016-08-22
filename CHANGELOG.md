@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+Version 1.0.2 *(22nd August, 2016)*
+-------------------------------------------
+*(supports analytics-ios 3.0+)
+
+* Updates support for Analytics 3.0 - < 4.0
+
 Version 1.0.1 *(12th April, 2016)*
 -------------------------------------------
 *(Supports analytics-ios 3.0.+ and FBSDK 4.10.1+)*
