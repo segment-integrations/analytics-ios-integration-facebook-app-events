@@ -1,9 +1,14 @@
 Change Log
 ==========
 
+Version 1.0.3 *(16th September, 2016)*
+-------------------------------------------
+
+* Updates FDSDKCoreKit to 4.15 - < 5.0
+
 Version 1.0.2 *(22nd August, 2016)*
 -------------------------------------------
-*(supports analytics-ios 3.0+)
+*(Supports analytics-ios 3.0+)
 
 * Updates support for Analytics 3.0 - < 4.0
 
