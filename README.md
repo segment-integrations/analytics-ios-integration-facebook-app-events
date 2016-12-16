@@ -8,7 +8,7 @@ Facebook App Events integration for analytics-ios.
 
 ## Installation
 
-To install the Segment-Mixpanel integration, simply add this line to your [CocoaPods](http://cocoapods.org) `Podfile`:
+To install the Segment-Facebook App Events integration, simply add this line to your [CocoaPods](http://cocoapods.org) `Podfile`:
 
 ```ruby
 pod "Segment-Facebook-App-Events"
@@ -16,7 +16,7 @@ pod "Segment-Facebook-App-Events"
 
 ## Usage
 
-After adding the dependency, you must register the integration with our SDK.  To do this, import the Mixpanel integration in your `AppDelegate`:
+After adding the dependency, you must register the integration with our SDK.  To do this, import the Facebook App Events integration in your `AppDelegate`:
 
 ```
 #import <Segment-Facebook-App-Events/SEGFacebookAppEventsIntegrationFactory.h>
@@ -33,6 +33,7 @@ SEGAnalyticsConfiguration *config = [SEGAnalyticsConfiguration configurationWith
 [SEGAnalytics setupWithConfiguration:config];
 
 ```
+
 ## License
 
 ```
