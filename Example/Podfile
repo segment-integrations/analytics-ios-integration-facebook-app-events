@@ -1,5 +1,5 @@
 target 'Segment-Facebook_Example' do
-  pod 'Segment-Facebook-App-Events', :path => '../'
+  pod 'Astronomer-Facebook-App-Events', :path => '../'
 
   target 'Segment-Facebook_Tests' do
     inherit! :search_paths
