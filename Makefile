@@ -3,9 +3,9 @@ XCPRETTY := xcpretty -c && exit ${PIPESTATUS[0]}
 SDK ?= "iphonesimulator"
 DESTINATION ?= "platform=iOS Simulator,name=iPhone 5"
 PROJECT := Segment-Facebook
-XC_ARGS := -scheme $(PROJECT)-Example -workspace /Users/dictatorcartman/Desktop/EBTHERROr/$(PROJECT).xcworkspace -sdk $(SDK) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO
+XC_ARGS := -scheme $(PROJECT)-Example -workspace Example/$(PROJECT).xcworkspace -sdk $(SDK) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO
 
-install: /Users/dictatorcartman/Desktop/EBTHERROr/Podfile Astronomer-Facebook-App-Events.podspec
+install: Example/podfile Astronomer-Facebook-App-Events.podspec
 	pod install --project-directory=Example
 
 clean:
