@@ -5,7 +5,7 @@ DESTINATION ?= "platform=iOS Simulator,name=iPhone 5"
 PROJECT := Segment-Facebook
 XC_ARGS := -scheme $(PROJECT)-Example -workspace Example/$(PROJECT).xcworkspace -sdk $(SDK) -destination $(DESTINATION) ONLY_ACTIVE_ARCH=NO
 
-install: Example/podfile Astronomer-Facebook-App-Events.podspec
+install: Example/Podfile Astronomer-Facebook-App-Events.podspec
 	pod install --project-directory=Example
 
 clean:
