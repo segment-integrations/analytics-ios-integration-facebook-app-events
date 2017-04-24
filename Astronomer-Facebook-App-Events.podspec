@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
-  s.name             = "Segment-Facebook-App-Events"
+  s.name             = "Astronomer-Facebook-App-Events"
   s.version          = "1.0.3"
-  s.summary          = "Facebook App Events Integration for Segment's analytics-ios library."
+  s.summary          = "Facebook App Events Integration for Astronomer's analytics-ios library."
 
   s.description      = <<-DESC
                        Analytics for iOS provides a single API that lets you
@@ -10,10 +10,10 @@ Pod::Spec.new do |s|
                        This is the Facebook App Events integration for the iOS library.
                        DESC
 
-  s.homepage         = "http://segment.com/"
+  s.homepage         = "http://astronomer.io/"
   s.license          =  { :type => 'MIT' }
   s.author           = { "Segment" => "friends@segment.com" }
-  s.source           = { :git => "https://github.com/segment-integrations/analytics-ios-integration-facebook-app-events.git", :tag => s.version.to_s }
+  s.source           = { :git => "https://github.com/astronomer-integrations/analytics-ios-integration-facebook-app-events.git", :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/segment'
 
   s.platform     = :ios, '8.0'
@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Pod/Classes/**/*'
 
-  s.dependency 'Analytics', '~> 3.0'
+  s.dependency 'AstronomerAnalytics', '~> 3.0'
   s.dependency 'FBSDKCoreKit', '~> 4.15'
 
   s.pod_target_xcconfig = { 'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES' }

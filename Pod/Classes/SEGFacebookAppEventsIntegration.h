@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import <Analytics/SEGIntegration.h>
+#import <AstronomerAnalytics/SEGIntegration.h>
 
 @interface SEGFacebookAppEventsIntegration : NSObject<SEGIntegration>
 
