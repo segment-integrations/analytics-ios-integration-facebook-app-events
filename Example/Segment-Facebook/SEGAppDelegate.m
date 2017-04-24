@@ -7,16 +7,16 @@
 //
 
 #import "SEGAppDelegate.h"
-#import <Analytics/SEGAnalytics.h>
-#import <Segment-Facebook-App-Events/SEGFacebookAppEventsIntegrationFactory.h>
-
+#import <AstronomerAnalytics/SEGAnalytics.h>
+#import <Astronomer-Facebook-App-Events/SEGFacebookAppEventsIntegrationFactory.h>
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
 @implementation SEGAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
     [SEGAnalytics debug:YES];
-    SEGAnalyticsConfiguration *config = [SEGAnalyticsConfiguration configurationWithWriteKey:@"gnjyuUpq7mZYtLM76mwltoiZcDsFpnfY"];
+    SEGAnalyticsConfiguration *config = [SEGAnalyticsConfiguration configurationWithWriteKey:@"mti5N6FyJ2xd3wgKT"];
     
     // Add any of your bundled integrations.
     [config use:[SEGFacebookAppEventsIntegrationFactory instance]];
@@ -52,6 +52,7 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    [FBSDKAppEvents activateApp];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

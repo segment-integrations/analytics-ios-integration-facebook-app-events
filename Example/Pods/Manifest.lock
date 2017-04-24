@@ -1,5 +1,8 @@
 PODS:
-  - Analytics (3.4.0)
+  - Astronomer-Facebook-App-Events (1.0.3):
+    - AstronomerAnalytics (~> 3.0)
+    - FBSDKCoreKit (~> 4.15)
+  - AstronomerAnalytics (3.5.6)
   - Bolts (1.8.4):
     - Bolts/AppLinks (= 1.8.4)
     - Bolts/Tasks (= 1.8.4)
@@ -7,30 +10,27 @@ PODS:
     - Bolts/Tasks
   - Bolts/Tasks (1.8.4)
   - Expecta (1.0.5)
-  - FBSDKCoreKit (4.15.1):
+  - FBSDKCoreKit (4.19.0):
     - Bolts (~> 1.7)
-  - Segment-Facebook-App-Events (1.0.2):
-    - Analytics (~> 3.0)
-    - FBSDKCoreKit (~> 4.15)
   - Specta (1.0.5)
 
 DEPENDENCIES:
+  - Astronomer-Facebook-App-Events (from `../`)
   - Expecta
-  - Segment-Facebook-App-Events (from `../`)
   - Specta
 
 EXTERNAL SOURCES:
-  Segment-Facebook-App-Events:
-    :path: "../"
+  Astronomer-Facebook-App-Events:
+    :path: ../
 
 SPEC CHECKSUMS:
-  Analytics: 51192a4d51f02144816ad68959020e090c047da8
+  Astronomer-Facebook-App-Events: bec4ed4384a474093234dbcd7657261f52e39291
+  AstronomerAnalytics: d2593dbf542c1621e1604ebae70c3a5671d5e41f
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
   Expecta: e1c022fcd33910b6be89c291d2775b3fe27a89fe
-  FBSDKCoreKit: fc7fa53d16b095ee3fd53f0cd59f1df8bcbb634d
-  Segment-Facebook-App-Events: 67858f09583ecd7b96665c41b650eada021c69ea
+  FBSDKCoreKit: 894b2b6eda6a4c8c4204e92e59cc355709ef045c
   Specta: ac94d110b865115fe60ff2c6d7281053c6f8e8a2
 
-PODFILE CHECKSUM: 35fb1c6294136db9b99cbeeb196e53f8fad6f1d9
+PODFILE CHECKSUM: d1d18b24c2f6998a1b3db84466f516066930594a
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.2.0

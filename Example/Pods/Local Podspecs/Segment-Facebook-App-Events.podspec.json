@@ -1,9 +1,9 @@
 {
   "name": "Segment-Facebook-App-Events",
-  "version": "1.0.2",
-  "summary": "Facebook App Events Integration for Segment's analytics-ios library.",
+  "version": "1.0.3",
+  "summary": "Facebook App Events Integration for Astronomer's analytics-ios library.",
   "description": "Analytics for iOS provides a single API that lets you\nintegrate with over 100s of tools.\n\nThis is the Facebook App Events integration for the iOS library.",
-  "homepage": "http://segment.com/",
+  "homepage": "http://astronomer.io/",
   "license": {
     "type": "MIT"
   },
@@ -11,8 +11,8 @@
     "Segment": "friends@segment.com"
   },
   "source": {
-    "git": "https://github.com/segment-integrations/analytics-ios-integration-facebook-app-events.git",
-    "tag": "1.0.2"
+    "git": "https://github.com/astronomer-integrations/analytics-ios-integration-facebook-app-events.git",
+    "tag": "1.0.3"
   },
   "social_media_url": "https://twitter.com/segment",
   "platforms": {
@@ -21,7 +21,7 @@
   "requires_arc": true,
   "source_files": "Pod/Classes/**/*",
   "dependencies": {
-    "Analytics": [
+    "AstronomerAnalytics": [
       "~> 3.0"
     ],
     "FBSDKCoreKit": [

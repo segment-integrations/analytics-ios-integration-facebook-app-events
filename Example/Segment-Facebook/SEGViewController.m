@@ -7,7 +7,7 @@
 //
 
 #import "SEGViewController.h"
-
+#import "FBSDKCoreKit/FBSDKCoreKit.h"
 @interface SEGViewController ()
 
 @end
@@ -17,6 +17,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [FBSDKAppEvents logPurchase:4.89 currency:@"USD"];
 	// Do any additional setup after loading the view, typically from a nib.
 }
 

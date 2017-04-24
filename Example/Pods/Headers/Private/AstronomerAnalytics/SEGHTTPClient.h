@@ -1,0 +1,1 @@
+../../../AstronomerAnalytics/Analytics/Classes/Internal/SEGHTTPClient.h
