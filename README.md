@@ -1,5 +1,6 @@
 # Analytics
 
+[![CircleCI](https://circleci.com/gh/segment-integrations/analytics-ios-integration-facebook-app-events.svg?style=svg)](https://circleci.com/gh/segment-integrations/analytics-ios-integration-facebook-app-events)
 [![Version](https://img.shields.io/cocoapods/v/Segment-Facebook-App-Events.svg?style=flat)](http://cocoapods.org/pods/Segment-Facebook-App-Events)
 [![License](https://img.shields.io/cocoapods/l/Segment-Facebook-App-Events.svg?style=flat)](http://cocoapods.org/pods/Segment-Facebook-App-Events)
 
