@@ -1,6 +1,5 @@
 # Analytics
 
-[![CI Status](http://img.shields.io/travis/segment-integrations/analytics-ios-integration-facebook-app-events.svg?style=flat)](https://travis-ci.org/segment-integrations/analytics-ios-integration-facebook-app-events)
 [![Version](https://img.shields.io/cocoapods/v/Segment-Facebook-App-Events.svg?style=flat)](http://cocoapods.org/pods/Segment-Facebook-App-Events)
 [![License](https://img.shields.io/cocoapods/l/Segment-Facebook-App-Events.svg?style=flat)](http://cocoapods.org/pods/Segment-Facebook-App-Events)
 
