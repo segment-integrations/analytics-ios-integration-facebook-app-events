@@ -7,7 +7,7 @@ install: Example/Podfile Segment-Facebook-App-Events.podspec
 	pod install --project-directory=Example
 
 lint:
-	pod lib lint
+	pod lib lint --allow-warnings
 
 clean:
 	set -o pipefail && xcodebuild $(XC_ARGS) clean | xcpretty
