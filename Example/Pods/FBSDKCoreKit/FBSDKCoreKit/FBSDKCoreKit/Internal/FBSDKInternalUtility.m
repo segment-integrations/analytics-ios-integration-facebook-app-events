@@ -24,7 +24,7 @@
 
 #import "FBSDKCoreKit+Internal.h"
 #import "FBSDKError.h"
-#import "FBSDKMacros.h"
+#import "FBSDKSettings+Internal.h"
 #import "FBSDKSettings.h"
 #import "FBSDKUtility.h"
 
@@ -110,11 +110,11 @@ typedef NS_ENUM(NSUInteger, FBSDKInternalUtilityVersionShift)
   return value;
 }
 
-+ (unsigned long)currentTimeInMilliseconds
++ (uint64_t)currentTimeInMilliseconds
 {
   struct timeval time;
   gettimeofday(&time, NULL);
-  return (time.tv_sec * 1000) + (time.tv_usec / 1000);
+  return ((uint64_t)time.tv_sec * 1000) + (time.tv_usec / 1000);
 }
 
 + (BOOL)dictionary:(NSMutableDictionary *)dictionary
@@ -188,7 +188,7 @@ setJSONStringForObject:(id)object
   }
   host = [NSString stringWithFormat:@"%@%@", hostPrefix ?: @"", host ?: @""];
 
-  NSString *version = defaultVersion ?: FBSDK_TARGET_PLATFORM_VERSION;
+  NSString *version = defaultVersion ?: [FBSDKSettings graphAPIVersion];
   if ([version length]) {
     version = [@"/" stringByAppendingString:version];
   }
@@ -199,6 +199,10 @@ setJSONStringForObject:(id)object
         [versionScanner scanInteger:NULL] &&
         [versionScanner scanString:@"." intoString:NULL] &&
         [versionScanner scanInteger:NULL]) {
+      [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorDeveloperErrors
+                             logEntry:[NSString stringWithFormat:@"Invalid Graph API version:%@, assuming %@ instead",
+                                       version,
+                                       [FBSDKSettings graphAPIVersion]]];
       version = nil;
     }
     if (![path hasPrefix:@"/"]) {
@@ -243,7 +247,7 @@ setJSONStringForObject:(id)object
   static dispatch_once_t getVersionOnce;
   dispatch_once(&getVersionOnce, ^{
     int32_t linkTimeVersion = NSVersionOfLinkTimeLibrary("UIKit");
-    linkTimeMajorVersion = ((MAX(linkTimeVersion, 0) & FBSDKInternalUtilityMajorVersionMask) >> FBSDKInternalUtilityMajorVersionShift);
+    linkTimeMajorVersion = [self getMajorVersionFromFullLibraryVersion:linkTimeVersion];
   });
   return (version <= linkTimeMajorVersion);
 }
@@ -254,9 +258,22 @@ setJSONStringForObject:(id)object
   static dispatch_once_t getVersionOnce;
   dispatch_once(&getVersionOnce, ^{
     int32_t runTimeVersion = NSVersionOfRunTimeLibrary("UIKit");
-    runTimeMajorVersion = ((MAX(runTimeVersion, 0) & FBSDKInternalUtilityMajorVersionMask) >> FBSDKInternalUtilityMajorVersionShift);
+    runTimeMajorVersion = [self getMajorVersionFromFullLibraryVersion:runTimeVersion];
   });
   return (version <= runTimeMajorVersion);
+}
+
++ (int32_t)getMajorVersionFromFullLibraryVersion:(int32_t)version
+{
+  // Negative values returned by NSVersionOfRunTimeLibrary/NSVersionOfLinkTimeLibrary
+  // are still valid version numbers, as long as it's not -1.
+  // After bitshift by 16, the negatives become valid positive major version number.
+  // We ran into this first time with iOS 12.
+  if (version != -1) {
+    return ((version & FBSDKInternalUtilityMajorVersionMask) >> FBSDKInternalUtilityMajorVersionShift);
+  } else {
+    return 0;
+  }
 }
 
 + (NSString *)JSONStringForObject:(id)object
@@ -267,7 +284,7 @@ setJSONStringForObject:(id)object
     object = [self _convertObjectToJSONObject:object invalidObjectHandler:invalidObjectHandler stop:NULL];
     if (![NSJSONSerialization isValidJSONObject:object]) {
       if (errorRef != NULL) {
-        *errorRef = [FBSDKError invalidArgumentErrorWithName:@"object"
+        *errorRef = [NSError fbInvalidArgumentErrorWithName:@"object"
                                                        value:object
                                                      message:@"Invalid object for JSON serialization."];
       }
@@ -401,7 +418,7 @@ setJSONStringForObject:(id)object
                                                                                   error:&queryStringError]];
     if (!queryString) {
       if (errorRef != NULL) {
-        *errorRef = [FBSDKError invalidArgumentErrorWithName:@"queryParameters"
+        *errorRef = [NSError fbInvalidArgumentErrorWithName:@"queryParameters"
                                                        value:queryParameters
                                                      message:nil
                                              underlyingError:queryStringError];
@@ -420,7 +437,7 @@ setJSONStringForObject:(id)object
     if (URL) {
       *errorRef = nil;
     } else {
-      *errorRef = [FBSDKError unknownErrorWithMessage:@"Unknown error building URL."];
+      *errorRef = [NSError fbUnknownErrorWithMessage:@"Unknown error building URL."];
     }
   }
   return URL;
@@ -489,11 +506,7 @@ static NSMapTable *_transientObjects;
   dispatch_once(&onceToken, ^{
     [FBSDKInternalUtility checkRegisteredCanOpenURLScheme:FBSDK_CANOPENURL_FACEBOOK];
   });
-  NSURLComponents *components = [[NSURLComponents alloc] init];
-  components.scheme = FBSDK_CANOPENURL_FACEBOOK;
-  components.path = @"/";
-  return [[UIApplication sharedApplication]
-          canOpenURL:components.URL];
+  return [self _canOpenURLScheme:FBSDK_CANOPENURL_FACEBOOK];
 }
 
 + (BOOL)isMessengerAppInstalled
@@ -502,20 +515,16 @@ static NSMapTable *_transientObjects;
   dispatch_once(&onceToken, ^{
     [FBSDKInternalUtility checkRegisteredCanOpenURLScheme:FBSDK_CANOPENURL_MESSENGER];
   });
-  NSURLComponents *components = [[NSURLComponents alloc] init];
-  components.scheme = FBSDK_CANOPENURL_MESSENGER;
-  components.path = @"/";
-  return [[UIApplication sharedApplication]
-          canOpenURL:components.URL];
-
+  return [self _canOpenURLScheme:FBSDK_CANOPENURL_MESSENGER];
 }
 
-#pragma mark - Object Lifecycle
-
-- (instancetype)init
++ (BOOL)isMSQRDPlayerAppInstalled
 {
-  FBSDK_NO_DESIGNATED_INITIALIZER();
-  return nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    [FBSDKInternalUtility checkRegisteredCanOpenURLScheme:FBSDK_CANOPENURL_MSQRD_PLAYER];
+  });
+  return [self _canOpenURLScheme:FBSDK_CANOPENURL_MSQRD_PLAYER];
 }
 
 #pragma mark - Helper Methods
@@ -579,6 +588,14 @@ static NSMapTable *_transientObjects;
   return object;
 }
 
++ (BOOL)_canOpenURLScheme:(NSString *)scheme
+{
+  NSURLComponents *components = [[NSURLComponents alloc] init];
+  components.scheme = scheme;
+  components.path = @"/";
+  return [[UIApplication sharedApplication] canOpenURL:components.URL];
+}
+
 + (void)validateAppID
 {
   if (![FBSDKSettings appID]) {
@@ -618,10 +635,34 @@ static NSMapTable *_transientObjects;
   }
 }
 
++ (UIWindow *)findWindow
+{
+  UIWindow *window = [UIApplication sharedApplication].keyWindow;
+  if (window == nil || window.windowLevel != UIWindowLevelNormal) {
+    for (window in [UIApplication sharedApplication].windows) {
+      if (window.windowLevel == UIWindowLevelNormal) {
+        break;
+      }
+    }
+  }
+  if (window == nil) {
+    [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorDeveloperErrors
+                       formatString:@"Unable to find a valid UIWindow", nil];
+  }
+  return window;
+}
 
 + (UIViewController *)topMostViewController
 {
-  UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+  UIWindow *keyWindow = [self findWindow];
+  // SDK expects a key window at this point, if it is not, make it one
+  if (keyWindow !=  nil && !keyWindow.isKeyWindow) {
+    [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorDeveloperErrors
+                       formatString:@"Unable to obtain a key window, marking %@ as keyWindow", keyWindow.description];
+    [keyWindow makeKeyWindow];
+  }
+
+  UIViewController *topController = keyWindow.rootViewController;
   while (topController.presentedViewController) {
     topController = topController.presentedViewController;
   }
@@ -678,11 +719,7 @@ static NSMapTable *_transientObjects;
 
   if (![self isRegisteredCanOpenURLScheme:urlScheme]){
     NSString *reason = [NSString stringWithFormat:@"%@ is missing from your Info.plist under LSApplicationQueriesSchemes and is required for iOS 9.0", urlScheme];
-#ifdef __IPHONE_9_0
-    @throw [NSException exceptionWithName:@"InvalidOperationException" reason:reason userInfo:nil];
-#else
     [FBSDKLogger singleShotLogEntry:FBSDKLoggingBehaviorDeveloperErrors logEntry:reason];
-#endif
   }
 }
 
@@ -738,6 +775,15 @@ static NSMapTable *_transientObjects;
   }
 
   return clazz;
+}
+
++ (BOOL)isUnity
+{
+  NSString *userAgentSuffix = [FBSDKSettings userAgentSuffix];
+  if (userAgentSuffix != nil && [userAgentSuffix rangeOfString:@"Unity"].location != NSNotFound) {
+    return YES;
+  }
+  return NO;
 }
 
 @end

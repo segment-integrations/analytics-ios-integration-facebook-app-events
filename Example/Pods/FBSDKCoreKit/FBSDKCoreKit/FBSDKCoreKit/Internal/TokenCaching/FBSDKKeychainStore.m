@@ -25,7 +25,6 @@
 #import "FBSDKKeychainStore.h"
 
 #import "FBSDKDynamicFrameworkLoader.h"
-#import "FBSDKMacros.h"
 
 @implementation FBSDKKeychainStore
 
@@ -38,12 +37,6 @@
     }
 
     return self;
-}
-
-- (instancetype)init
-{
-  FBSDK_NOT_DESIGNATED_INITIALIZER(initWithService:accessGroup:);
-  return [self initWithService:nil accessGroup:nil];
 }
 
 - (BOOL)setDictionary:(NSDictionary *)value forKey:(NSString *)key accessibility:(CFTypeRef)accessibility
@@ -89,6 +82,12 @@
         return NO;
     }
 
+#if TARGET_OS_SIMULATOR
+    NSLog(@"Falling back to storing access token in NSUserDefaults because of simulator bug");
+    [[NSUserDefaults standardUserDefaults] setObject:value forKey:key];
+
+    return [[NSUserDefaults standardUserDefaults] synchronize];
+#else
     NSMutableDictionary *query = [self queryForKey:key];
 
     OSStatus status;
@@ -98,14 +97,16 @@
 
         status = fbsdkdfl_SecItemUpdate((__bridge CFDictionaryRef)query, (__bridge CFDictionaryRef)attributesToUpdate);
         if (status == errSecItemNotFound) {
-#if TARGET_OS_IPHONE || (defined(MAC_OS_X_VERSION_10_9) && MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9)
+#if !TARGET_OS_TV
+          if (@available(macOS 10.9, iOS 8, *)) {
             if (accessibility) {
-                [query setObject:(__bridge id)(accessibility) forKey:[FBSDKDynamicFrameworkLoader loadkSecAttrAccessible]];
+              [query setObject:(__bridge id)(accessibility) forKey:[FBSDKDynamicFrameworkLoader loadkSecAttrAccessible]];
             }
+          }
 #endif
-            [query setObject:value forKey:[FBSDKDynamicFrameworkLoader loadkSecValueData]];
+          [query setObject:value forKey:[FBSDKDynamicFrameworkLoader loadkSecValueData]];
 
-            status = fbsdkdfl_SecItemAdd((__bridge CFDictionaryRef)query, NULL);
+          status = fbsdkdfl_SecItemAdd((__bridge CFDictionaryRef)query, NULL);
         }
     } else {
         status = fbsdkdfl_SecItemDelete((__bridge CFDictionaryRef)query);
@@ -115,6 +116,7 @@
     }
 
     return (status == errSecSuccess);
+#endif
 }
 
 - (NSData *)dataForKey:(NSString *)key
@@ -123,6 +125,10 @@
         return nil;
     }
 
+#if TARGET_OS_SIMULATOR
+    NSLog(@"Falling back to loading access token from NSUserDefaults because of simulator bug");
+    return [[NSUserDefaults standardUserDefaults] dataForKey:key];
+#else
     NSMutableDictionary *query = [self queryForKey:key];
     [query setObject:(id)kCFBooleanTrue forKey:[FBSDKDynamicFrameworkLoader loadkSecReturnData]];
     [query setObject:[FBSDKDynamicFrameworkLoader loadkSecMatchLimitOne] forKey:[FBSDKDynamicFrameworkLoader loadkSecMatchLimit]];
@@ -141,6 +147,7 @@
     CFRelease(data);
 
     return ret;
+#endif
 }
 
 - (NSMutableDictionary *)queryForKey:(NSString *)key

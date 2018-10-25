@@ -19,11 +19,18 @@
 #import <Foundation/Foundation.h>
 
 #import <FBSDKCoreKit/FBSDKApplicationDelegate.h>
-#import <FBSDKCoreKit/FBSDKMacros.h>
 
 #import "FBSDKCoreKit+Internal.h"
 
-FBSDK_EXTERN NSString *const FBSDKApplicationDidBecomeActiveNotification;
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+
+FOUNDATION_EXPORT NSNotificationName const FBSDKApplicationDidBecomeActiveNotification;
+
+#else
+
+FOUNDATION_EXPORT NSString *const FBSDKApplicationDidBecomeActiveNotification;
+
+#endif
 
 @class FBSDKApplicationCall;
 
@@ -43,9 +50,9 @@ typedef void(^FBSDKBridgeAPICallbackBlock)(FBSDKBridgeAPIResponse *response);
 - (void)openURLWithSafariViewController:(NSURL *)url
                                  sender:(id<FBSDKURLOpening>)sender
                      fromViewController:(UIViewController *)fromViewController
-                                handler:(void(^)(BOOL))handler;
+                                handler:(void(^)(BOOL, NSError *))handler;
 
-- (void)openURL:(NSURL *)url sender:(id<FBSDKURLOpening>)sender handler:(void(^)(BOOL))handler;
+- (void)openURL:(NSURL *)url sender:(id<FBSDKURLOpening>)sender handler:(void(^)(BOOL, NSError *))handler;
 
 #endif
 
