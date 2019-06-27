@@ -24,15 +24,36 @@ typedef void (^FBSDKGraphRequestAccessToAccountsHandler)(NSString *oauthToken, N
 /*
  @class
 
- @abstract Adapter around system account store APIs. Note this is only intended for internal
+  Adapter around system account store APIs. Note this is only intended for internal
  consumption. If publicized, consider moving declarations to an internal only header and
  reconsider dispatching semantics.
  */
 @interface FBSDKSystemAccountStoreAdapter : NSObject
 
 /*
- @abstract
- Requests access to the device's Facebook account for the given parameters.
+ s gets the oauth token stored in the account store credential, if available. If not empty,
+ this implies user has granted access.
+ */
+@property (nonatomic, readonly, copy) NSString *accessTokenString;
+
+/*
+  Gets or sets the flag indicating if the next requestAccess call should block
+ on a renew call.
+ */
+@property (nonatomic, assign) BOOL forceBlockingRenew;
+
+/*
+  A convenience getter to the Facebook account type in the account store, if available.
+ */
+@property (strong, nonatomic, readonly) ACAccountType *accountType;
+
+/*
+  The singleton instance.
+ */
+@property (class, nonatomic, strong) FBSDKSystemAccountStoreAdapter *sharedInstance;
+
+/*
+  Requests access to the device's Facebook account for the given parameters.
  @param permissions the permissions
  @param defaultAudience the default audience
  @param isReauthorize a flag describing if this is a reauth request
@@ -46,37 +67,10 @@ typedef void (^FBSDKGraphRequestAccessToAccountsHandler)(NSString *oauthToken, N
                                     handler:(FBSDKGraphRequestAccessToAccountsHandler)handler;
 
 /*
- @abstract Sends a message to the device account store to renew the Facebook account credentials
+  Sends a message to the device account store to renew the Facebook account credentials
 
  @param handler the handler that is invoked on completion
  */
 - (void)renewSystemAuthorization:(void(^)(ACAccountCredentialRenewResult result, NSError *error))handler;
-
-/*
- @abstracts gets the oauth token stored in the account store credential, if available. If not empty,
- this implies user has granted access.
- */
-- (NSString *)accessTokenString;
-
-/*
- @abstract Gets the singleton instance.
- */
-+ (FBSDKSystemAccountStoreAdapter *)sharedInstance;
-
-/*
- @abstract Sets the singleton instance, typically only for unit tests
- */
-+ (void)setSharedInstance:(FBSDKSystemAccountStoreAdapter *)instance;
-
-/*
- @abstract Gets or sets the flag indicating if the next requestAccess call should block
- on a renew call.
- */
-@property (nonatomic, assign) BOOL forceBlockingRenew;
-
-/*
- @abstract A convenience getter to the Facebook account type in the account store, if available.
- */
-@property (strong, nonatomic, readonly) ACAccountType *accountType;
 
 @end
