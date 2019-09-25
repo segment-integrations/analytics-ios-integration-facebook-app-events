@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "Segment-Facebook-App-Events"
-  s.version          = "1.0.3"
+  s.version          = "1.0.4"
   s.summary          = "Facebook App Events Integration for Segment's analytics-ios library."
 
   s.description      = <<-DESC
@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   s.source_files = 'Pod/Classes/**/*'
 
   s.dependency 'Analytics', '~> 3.0'
-  s.dependency 'FBSDKCoreKit', '~> 4.15'
+  s.dependency 'FBSDKCoreKit', '~> 5.6.0'
 
   s.pod_target_xcconfig = { 'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES' }
 end
