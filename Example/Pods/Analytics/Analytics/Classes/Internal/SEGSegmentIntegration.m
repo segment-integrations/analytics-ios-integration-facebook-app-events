@@ -4,10 +4,9 @@
 #import "SEGAnalytics.h"
 #import "SEGAnalyticsUtils.h"
 #import "SEGSegmentIntegration.h"
-#import "SEGBluetooth.h"
 #import "SEGReachability.h"
-#import "SEGLocation.h"
 #import "SEGHTTPClient.h"
+#import "SEGStorage.h"
 
 #if TARGET_OS_IOS
 #import <CoreTelephony/CTCarrier.h>
@@ -24,6 +23,10 @@ NSString *const SEGADClientClass = @"ADClient";
 NSString *const SEGUserIdKey = @"SEGUserId";
 NSString *const SEGQueueKey = @"SEGQueue";
 NSString *const SEGTraitsKey = @"SEGTraits";
+
+NSString *const kSEGUserIdFilename = @"segmentio.userId";
+NSString *const kSEGQueueFilename = @"segmentio.queue.plist";
+NSString *const kSEGTraitsFilename = @"segmentio.traits.plist";
 
 static NSString *GetDeviceModel()
 {
@@ -53,44 +56,39 @@ static BOOL GetAdTrackingEnabled()
 @property (nonatomic, strong) NSDictionary *cachedStaticContext;
 @property (nonatomic, strong) NSURLSessionUploadTask *batchRequest;
 @property (nonatomic, assign) UIBackgroundTaskIdentifier flushTaskID;
-@property (nonatomic, strong) SEGBluetooth *bluetooth;
 @property (nonatomic, strong) SEGReachability *reachability;
-@property (nonatomic, strong) SEGLocation *location;
 @property (nonatomic, strong) NSTimer *flushTimer;
 @property (nonatomic, strong) dispatch_queue_t serialQueue;
+@property (nonatomic, strong) dispatch_queue_t backgroundTaskQueue;
 @property (nonatomic, strong) NSMutableDictionary *traits;
 @property (nonatomic, assign) SEGAnalytics *analytics;
 @property (nonatomic, assign) SEGAnalyticsConfiguration *configuration;
-@property (nonatomic, assign) NSDictionary *referrer;
+@property (atomic, copy) NSDictionary *referrer;
 @property (nonatomic, copy) NSString *userId;
 @property (nonatomic, strong) NSURL *apiURL;
 @property (nonatomic, strong) SEGHTTPClient *httpClient;
-
-@end
-
-
-@interface SEGAnalytics ()
-
-@property (nonatomic, strong) SEGHTTPClient *httpClient;
+@property (nonatomic, strong) id<SEGStorage> storage;
+@property (nonatomic, strong) NSURLSessionDataTask *attributionRequest;
 
 @end
 
 
 @implementation SEGSegmentIntegration
 
-- (id)initWithAnalytics:(SEGAnalytics *)analytics
+- (id)initWithAnalytics:(SEGAnalytics *)analytics httpClient:(SEGHTTPClient *)httpClient storage:(id<SEGStorage>)storage
 {
     if (self = [super init]) {
         self.analytics = analytics;
         self.configuration = analytics.configuration;
-        self.httpClient = analytics.httpClient;
-        self.apiURL = [NSURL URLWithString:@"https://api.segment.io/v1/import"];
+        self.httpClient = httpClient;
+        self.storage = storage;
+        self.apiURL = [SEGMENT_API_BASE URLByAppendingPathComponent:@"import"];
         self.userId = [self getUserId];
-        self.bluetooth = [[SEGBluetooth alloc] init];
         self.reachability = [SEGReachability reachabilityWithHostname:@"google.com"];
         [self.reachability startNotifier];
         self.cachedStaticContext = [self staticContext];
         self.serialQueue = seg_dispatch_queue_create_specific("io.segment.analytics.segmentio", DISPATCH_QUEUE_SERIAL);
+        self.backgroundTaskQueue = seg_dispatch_queue_create_specific("io.segment.analytics.backgroundTask", DISPATCH_QUEUE_SERIAL);
         self.flushTaskID = UIBackgroundTaskInvalid;
 
 #if !TARGET_OS_TV
@@ -103,17 +101,29 @@ static BOOL GetAdTrackingEnabled()
                 [[NSUserDefaults standardUserDefaults] removeObjectForKey:SEGTraitsKey];
             }
         }];
-
-        [self addSkipBackupAttributeToItemAtPath:self.userIDURL];
-        [self addSkipBackupAttributeToItemAtPath:self.traitsURL];
-        [self addSkipBackupAttributeToItemAtPath:self.queueURL];
 #endif
+        [self dispatchBackground:^{
+            [self trackAttributionData:self.configuration.trackAttributionData];
+        }];
 
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:30.0 target:self selector:@selector(flush) userInfo:nil repeats:YES];
-        });
+        if ([NSThread isMainThread]) {
+            [self setupFlushTimer];
+        } else {
+            dispatch_sync(dispatch_get_main_queue(), ^{
+                [self setupFlushTimer];
+            });
+        }
     }
     return self;
+}
+
+- (void)setupFlushTimer
+{
+    self.flushTimer = [NSTimer scheduledTimerWithTimeInterval:self.configuration.flushInterval
+                                                       target:self
+                                                     selector:@selector(flush)
+                                                     userInfo:nil
+                                                      repeats:YES];
 }
 
 /*
@@ -154,6 +164,7 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
     dict[@"device"] = ({
         NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
         dict[@"manufacturer"] = @"Apple";
+        dict[@"type"] = @"ios";
         dict[@"model"] = GetDeviceModel();
         dict[@"id"] = [[device identifierForVendor] UUIDString];
         if (NSClassFromString(SEGAdvertisingClassIdentifier)) {
@@ -170,17 +181,6 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
         @"name" : device.systemName,
         @"version" : device.systemVersion
     };
-
-#if TARGET_OS_IOS
-    static dispatch_once_t networkInfoOnceToken;
-    dispatch_once(&networkInfoOnceToken, ^{
-        _telephonyNetworkInfo = [[CTTelephonyNetworkInfo alloc] init];
-    });
-
-    CTCarrier *carrier = [_telephonyNetworkInfo subscriberCellularProvider];
-    if (carrier.carrierName.length)
-        dict[@"network"] = @{ @"carrier" : carrier.carrierName };
-#endif
 
     CGSize screenSize = [UIScreen mainScreen].bounds.size;
     dict[@"screen"] = @{
@@ -224,32 +224,27 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
     context[@"network"] = ({
         NSMutableDictionary *network = [[NSMutableDictionary alloc] init];
 
-        if (self.bluetooth.hasKnownState)
-            network[@"bluetooth"] = @(self.bluetooth.isEnabled);
-
         if (self.reachability.isReachable) {
             network[@"wifi"] = @(self.reachability.isReachableViaWiFi);
             network[@"cellular"] = @(self.reachability.isReachableViaWWAN);
         }
 
+#if TARGET_OS_IOS
+        static dispatch_once_t networkInfoOnceToken;
+        dispatch_once(&networkInfoOnceToken, ^{
+            _telephonyNetworkInfo = [[CTTelephonyNetworkInfo alloc] init];
+        });
+
+        CTCarrier *carrier = [_telephonyNetworkInfo subscriberCellularProvider];
+        if (carrier.carrierName.length)
+            network[@"carrier"] = carrier.carrierName;
+#endif
+
         network;
     });
 
-    self.location = !self.location ? [self.configuration shouldUseLocationServices] ? [SEGLocation new] : nil : self.location;
-
-#if TARGET_OS_IOS || (TARGET_OS_MAC && !TARGET_OS_IPHONE)
-    [self.location startUpdatingLocation];
-#endif
-
-    if (self.location.hasKnownLocation)
-        context[@"location"] = self.location.locationDictionary;
-
     context[@"traits"] = ({
         NSMutableDictionary *traits = [[NSMutableDictionary alloc] initWithDictionary:[self traits]];
-
-        if (self.location.hasKnownLocation)
-            traits[@"address"] = self.location.addressDictionary;
-
         traits;
     });
 
@@ -274,19 +269,34 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
 {
     [self endBackgroundTask];
 
-    self.flushTaskID = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-        [self endBackgroundTask];
-    }];
+    seg_dispatch_specific_sync(_backgroundTaskQueue, ^{
+        id<SEGApplicationProtocol> application = [self.analytics configuration].application;
+        if (application) {
+            self.flushTaskID = [application seg_beginBackgroundTaskWithName:@"Segmentio.Flush"
+                                                          expirationHandler:^{
+                                                              [self endBackgroundTask];
+                                                          }];
+        }
+    });
 }
 
 - (void)endBackgroundTask
 {
-    [self dispatchBackgroundAndWait:^{
+    // endBackgroundTask and beginBackgroundTask can be called from main thread
+    // We should not dispatch to the same queue we use to flush events because it can cause deadlock
+    // inside @synchronized(self) block for SEGIntegrationsManager as both events queue and main queue
+    // attempt to call forwardSelector:arguments:options:
+    // See https://github.com/segmentio/analytics-ios/issues/683
+    seg_dispatch_specific_sync(_backgroundTaskQueue, ^{
         if (self.flushTaskID != UIBackgroundTaskInvalid) {
-            [[UIApplication sharedApplication] endBackgroundTask:self.flushTaskID];
+            id<SEGApplicationProtocol> application = [self.analytics configuration].application;
+            if (application) {
+                [application seg_endBackgroundTask:self.flushTaskID];
+            }
+
             self.flushTaskID = UIBackgroundTaskInvalid;
         }
-    }];
+    });
 }
 
 - (NSString *)description
@@ -300,9 +310,9 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
         self.userId = userId;
 
 #if TARGET_OS_TV
-        [[NSUserDefaults standardUserDefaults] setValue:userId forKey:SEGUserIdKey];
+        [self.storage setString:userId forKey:SEGUserIdKey];
 #else
-        [self.userId writeToURL:self.userIDURL atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+        [self.storage setString:userId forKey:kSEGUserIdFilename];
 #endif
     }];
 }
@@ -313,9 +323,9 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
         [self.traits addEntriesFromDictionary:traits];
 
 #if TARGET_OS_TV
-        [[NSUserDefaults standardUserDefaults] setValue:[self.traits copy] forKey:SEGTraitsKey];
+        [self.storage setDictionary:[self.traits copy] forKey:SEGTraitsKey];
 #else
-        [[self.traits copy] writeToURL:self.traitsURL atomically:YES];
+        [self.storage setDictionary:[self.traits copy] forKey:kSEGTraitsFilename];
 #endif
     }];
 }
@@ -337,8 +347,6 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
 
 - (void)track:(SEGTrackPayload *)payload
 {
-    SEGLog(@"segment integration received payload %@", payload);
-
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     [dictionary setValue:payload.event forKey:@"event"];
     [dictionary setValue:payload.properties forKey:@"properties"];
@@ -391,7 +399,7 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
 {
     if ([activity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
         self.referrer = @{
-            @"url" : activity.webpageURL,
+            @"url" : activity.webpageURL.absoluteString,
         };
     }
 }
@@ -456,10 +464,8 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
 - (void)queuePayload:(NSDictionary *)payload
 {
     @try {
-        if (self.queue.count > 1000) {
-            // Remove the oldest element.
-            [self.queue removeObjectAtIndex:0];
-        }
+        // Trim the queue to maxQueueSize - 1 before we add a new element.
+        trimQueue(self.queue, self.analytics.configuration.maxQueueSize - 1);
         [self.queue addObject:payload];
         [self persistQueue];
         [self flushQueueByLength];
@@ -479,6 +485,7 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
     [self dispatchBackground:^{
         if ([self.queue count] == 0) {
             SEGLog(@"%@ No queued API calls to flush.", self);
+            [self endBackgroundTask];
             return;
         }
         if (self.batchRequest != nil) {
@@ -511,47 +518,23 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
 - (void)reset
 {
     [self dispatchBackgroundAndWait:^{
-        [[NSUserDefaults standardUserDefaults] setValue:nil forKey:SEGUserIdKey];
-
 #if TARGET_OS_TV
-        [[NSUserDefaults standardUserDefaults] setValue:@[] forKey:SEGQueueKey];
-        [[NSUserDefaults standardUserDefaults] setValue:@{} forKey:SEGTraitsKey];
+        [self.storage removeKey:SEGUserIdKey];
+        [self.storage removeKey:SEGTraitsKey];
 #else
-        [[NSFileManager defaultManager] removeItemAtURL:self.userIDURL error:NULL];
-        [[NSFileManager defaultManager] removeItemAtURL:self.traitsURL error:NULL];
-        [[NSFileManager defaultManager] removeItemAtURL:self.queueURL error:NULL];
+        [self.storage removeKey:kSEGUserIdFilename];
+        [self.storage removeKey:kSEGTraitsFilename];
 #endif
 
         self.userId = nil;
         self.traits = [NSMutableDictionary dictionary];
-        self.queue = [NSMutableArray array];
-        [self.batchRequest cancel];
-        self.batchRequest = nil;
     }];
 }
-
-- (void)addSkipBackupAttributeToItemAtPath:(NSURL *)url
-{
-    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:[url path]];
-    if (!exists) {
-        return;
-    }
-
-    NSError *error = nil;
-    BOOL success = [url setResourceValue:[NSNumber numberWithBool:YES]
-                                  forKey:NSURLIsExcludedFromBackupKey
-                                   error:&error];
-    if (!success) {
-        SEGLog(@"Error excluding %@ from backup %@", [url lastPathComponent], error);
-    }
-    return;
-}
-
 
 - (void)notifyForName:(NSString *)name userInfo:(id)userInfo
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:name object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:name object:userInfo];
         SEGLog(@"sent notification %@", name);
     });
 }
@@ -565,17 +548,21 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
     SEGLog(@"%@ Flushing %lu of %lu queued API calls.", self, (unsigned long)batch.count, (unsigned long)self.queue.count);
     SEGLog(@"Flushing batch %@.", payload);
 
-    self.batchRequest = [self.analytics.httpClient upload:payload forWriteKey:self.configuration.writeKey completionHandler:^(BOOL retry) {
-        if (retry) {
-            [self notifyForName:SEGSegmentRequestDidFailNotification userInfo:batch];
-            self.batchRequest = nil;
-            return;
-        }
+    self.batchRequest = [self.httpClient upload:payload forWriteKey:self.configuration.writeKey completionHandler:^(BOOL retry) {
+        [self dispatchBackground:^{
+            if (retry) {
+                [self notifyForName:SEGSegmentRequestDidFailNotification userInfo:batch];
+                self.batchRequest = nil;
+                [self endBackgroundTask];
+                return;
+            }
 
-        [self.queue removeObjectsInArray:batch];
-        [self persistQueue];
-        [self notifyForName:SEGSegmentRequestDidSucceedNotification userInfo:batch];
-        self.batchRequest = nil;
+            [self.queue removeObjectsInArray:batch];
+            [self persistQueue];
+            [self notifyForName:SEGSegmentRequestDidSucceedNotification userInfo:batch];
+            self.batchRequest = nil;
+            [self endBackgroundTask];
+        }];
     }];
 
     [self notifyForName:SEGSegmentDidSendRequestNotification userInfo:batch];
@@ -603,9 +590,9 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
 {
     if (!_queue) {
 #if TARGET_OS_TV
-        _queue = [[[NSUserDefaults standardUserDefaults] objectForKey:SEGQueueKey] mutableCopy] ?: [[NSMutableArray alloc] init];
+        _queue = [[self.storage arrayForKey:SEGQueueKey] ?: @[] mutableCopy];
 #else
-        _queue = [NSMutableArray arrayWithContentsOfURL:self.queueURL] ?: [[NSMutableArray alloc] init];
+        _queue = [[self.storage arrayForKey:kSEGQueueFilename] ?: @[] mutableCopy];
 #endif
     }
 
@@ -616,9 +603,9 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
 {
     if (!_traits) {
 #if TARGET_OS_TV
-        _traits = [[[NSUserDefaults standardUserDefaults] objectForKey:SEGTraitsKey] mutableCopy] ?: [[NSMutableDictionary alloc] init];
+        _traits = [[self.storage dictionaryForKey:SEGTraitsKey] ?: @{} mutableCopy];
 #else
-        _traits = [NSMutableDictionary dictionaryWithContentsOfURL:self.traitsURL] ?: [[NSMutableDictionary alloc] init];
+        _traits = [[self.storage dictionaryForKey:kSEGTraitsFilename] ?: @{} mutableCopy];
 #endif
     }
 
@@ -630,32 +617,49 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
     return 100;
 }
 
-- (NSURL *)userIDURL
-{
-    return SEGAnalyticsURLForFilename(@"segmentio.userId");
-}
-
-- (NSURL *)queueURL
-{
-    return SEGAnalyticsURLForFilename(@"segmentio.queue.plist");
-}
-
-- (NSURL *)traitsURL
-{
-    return SEGAnalyticsURLForFilename(@"segmentio.traits.plist");
-}
-
 - (NSString *)getUserId
 {
-    return [[NSUserDefaults standardUserDefaults] valueForKey:SEGUserIdKey] ?: [[NSString alloc] initWithContentsOfURL:self.userIDURL encoding:NSUTF8StringEncoding error:NULL];
+    return [[NSUserDefaults standardUserDefaults] valueForKey:SEGUserIdKey] ?: [self.storage stringForKey:kSEGUserIdFilename];
 }
 
 - (void)persistQueue
 {
 #if TARGET_OS_TV
-    [[NSUserDefaults standardUserDefaults] setValue:[self.queue copy] forKey:SEGQueueKey];
+    [self.storage setArray:[self.queue copy] forKey:SEGQueueKey];
 #else
-    [[self.queue copy] writeToURL:[self queueURL] atomically:YES];
+    [self.storage setArray:[self.queue copy] forKey:kSEGQueueFilename];
+#endif
+}
+
+NSString *const SEGTrackedAttributionKey = @"SEGTrackedAttributionKey";
+
+- (void)trackAttributionData:(BOOL)trackAttributionData
+{
+#if TARGET_OS_IPHONE
+    if (!trackAttributionData) {
+        return;
+    }
+
+    BOOL trackedAttribution = [[NSUserDefaults standardUserDefaults] boolForKey:SEGTrackedAttributionKey];
+    if (trackedAttribution) {
+        return;
+    }
+
+    NSDictionary *staticContext = self.cachedStaticContext;
+    NSDictionary *liveContext = [self liveContext];
+    NSMutableDictionary *context = [NSMutableDictionary dictionaryWithCapacity:staticContext.count + liveContext.count];
+    [context addEntriesFromDictionary:staticContext];
+    [context addEntriesFromDictionary:liveContext];
+
+    self.attributionRequest = [self.httpClient attributionWithWriteKey:self.configuration.writeKey forDevice:[context copy] completionHandler:^(BOOL success, NSDictionary *properties) {
+        [self dispatchBackground:^{
+            if (success) {
+                [self.analytics track:@"Install Attributed" properties:properties];
+                [[NSUserDefaults standardUserDefaults] setBool:YES forKey:SEGTrackedAttributionKey];
+            }
+            self.attributionRequest = nil;
+        }];
+    }];
 #endif
 }
 
