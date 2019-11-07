@@ -1,6 +1,16 @@
 Change Log
 ==========
 
+Version 1.0.4 *(8th Nov, 2019)*
+-------------------------------------------
+
+* Update FDSDKCoreKit to > 5.8
+* Update Analytics to 3.7
+* Update Specta to 1.0.7
+* Update Expecta 1.0.6
+* Remove Bolts
+* Update Cocoapods version
+
 Version 1.0.3 *(16th September, 2016)*
 -------------------------------------------
 
