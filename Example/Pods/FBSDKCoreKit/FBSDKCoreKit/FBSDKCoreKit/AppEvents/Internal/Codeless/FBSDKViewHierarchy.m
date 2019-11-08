@@ -22,10 +22,9 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import <FBSDKCoreKit/FBSDKCoreKit+Internal.h>
-
 #import "FBSDKCodelessMacros.h"
 #import "FBSDKCodelessPathComponent.h"
+#import "FBSDKCoreKit+Internal.h"
 
 #define MAX_VIEW_HIERARCHY_LEVEL 35
 
@@ -270,10 +269,10 @@ typedef NS_ENUM(NSUInteger, FBCodelessClassBitmask) {
 
 + (NSMutableDictionary<NSString *, id> *)getDetailAttributesOf:(NSObject *)obj
 {
-  return [self getDetailAttributesOf:obj WithHash:YES];
+  return [self getDetailAttributesOf:obj withHash:YES];
 }
 
-+ (NSMutableDictionary<NSString *, id> *)getDetailAttributesOf:(NSObject *)obj WithHash:(BOOL)hash
++ (NSMutableDictionary<NSString *, id> *)getDetailAttributesOf:(NSObject *)obj withHash:(BOOL)hash
 {
   if (!obj) {
     return nil;

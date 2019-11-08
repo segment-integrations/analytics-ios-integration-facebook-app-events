@@ -1,11 +1,11 @@
 PODS:
   - Analytics (3.7.0)
   - Expecta (1.0.6)
-  - FBSDKCoreKit (5.8.0):
-    - FBSDKCoreKit/Basics (= 5.8.0)
-    - FBSDKCoreKit/Core (= 5.8.0)
-  - FBSDKCoreKit/Basics (5.8.0)
-  - FBSDKCoreKit/Core (5.8.0):
+  - FBSDKCoreKit (5.10.0):
+    - FBSDKCoreKit/Basics (= 5.10.0)
+    - FBSDKCoreKit/Core (= 5.10.0)
+  - FBSDKCoreKit/Basics (5.10.0)
+  - FBSDKCoreKit/Core (5.10.0):
     - FBSDKCoreKit/Basics
   - Segment-Facebook-App-Events (1.0.3):
     - Analytics
@@ -31,7 +31,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Analytics: 77fd5fb102a4a5eedafa2c2b0245ceb7b7c15e45
   Expecta: 3b6bd90a64b9a1dcb0b70aa0e10a7f8f631667d5
-  FBSDKCoreKit: e7dcac0aabcfb09d0166998edd95fe3b05a0ce5d
+  FBSDKCoreKit: f9bae468a078f20c05c73450825ccd54cfafbbb7
   Segment-Facebook-App-Events: 31dfea41ee812795d59f8efdb947926aa3ac42b3
   Specta: 3e1bd89c3517421982dc4d1c992503e48bd5fe66
 
