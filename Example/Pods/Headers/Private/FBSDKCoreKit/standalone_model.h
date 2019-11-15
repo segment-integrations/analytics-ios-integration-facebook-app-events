@@ -1,0 +1,1 @@
+../../../FBSDKCoreKit/FBSDKCoreKit/FBSDKCoreKit/AppEvents/Internal/SuggestedEvents/standalone_model.h
