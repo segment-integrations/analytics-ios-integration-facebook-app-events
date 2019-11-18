@@ -18,23 +18,40 @@
 
 #import <Foundation/Foundation.h>
 
+#if SWIFT_PACKAGE
+#import "FBSDKCopying.h"
+#else
 #import <FBSDKCoreKit/FBSDKCopying.h>
+#endif
 
 #import "FBSDKDialogConfiguration.h"
 #import "FBSDKErrorConfiguration.h"
 
 // login kit
-extern NSString *const FBSDKDialogConfigurationNameLogin;
+FOUNDATION_EXPORT NSString *const FBSDKDialogConfigurationNameLogin;
 
 // share kit
-extern NSString *const FBSDKDialogConfigurationNameAppInvite;
-extern NSString *const FBSDKDialogConfigurationNameGameRequest;
-extern NSString *const FBSDKDialogConfigurationNameGroup;
-extern NSString *const FBSDKDialogConfigurationNameLike;
-extern NSString *const FBSDKDialogConfigurationNameMessage;
-extern NSString *const FBSDKDialogConfigurationNameShare;
+FOUNDATION_EXPORT NSString *const FBSDKDialogConfigurationNameAppInvite;
+FOUNDATION_EXPORT NSString *const FBSDKDialogConfigurationNameGameRequest;
+FOUNDATION_EXPORT NSString *const FBSDKDialogConfigurationNameGroup;
+FOUNDATION_EXPORT NSString *const FBSDKDialogConfigurationNameLike;
+FOUNDATION_EXPORT NSString *const FBSDKDialogConfigurationNameMessage;
+FOUNDATION_EXPORT NSString *const FBSDKDialogConfigurationNameShare;
 
+FOUNDATION_EXPORT const NSInteger FBSDKServerConfigurationVersion;
+
+typedef NS_OPTIONS(NSUInteger, FBSDKServerConfigurationSmartLoginOptions)
+{
+  FBSDKServerConfigurationSmartLoginOptionsUnknown = 0,
+  FBSDKServerConfigurationSmartLoginOptionsEnabled = 1 << 0,
+  FBSDKServerConfigurationSmartLoginOptionsRequireConfirmation  = 1 << 1,
+};
+
+NS_SWIFT_NAME(ServerConfiguration)
 @interface FBSDKServerConfiguration : NSObject <FBSDKCopying, NSSecureCoding>
+
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
 
 - (instancetype)initWithAppID:(NSString *)appID
                       appName:(NSString *)appName
@@ -44,8 +61,10 @@ extern NSString *const FBSDKDialogConfigurationNameShare;
          advertisingIDEnabled:(BOOL)advertisingIDEnabled
        implicitLoggingEnabled:(BOOL)implicitLoggingEnabled
 implicitPurchaseLoggingEnabled:(BOOL)implicitPurchaseLoggingEnabled
+        codelessEventsEnabled:(BOOL)codelessEventsEnabled
   systemAuthenticationEnabled:(BOOL)systemAuthenticationEnabled
         nativeAuthFlowEnabled:(BOOL)nativeAuthFlowEnabled
+     uninstallTrackingEnabled:(BOOL)uninstallTrackingEnabled
          dialogConfigurations:(NSDictionary *)dialogConfigurations
                   dialogFlows:(NSDictionary *)dialogFlows
                     timestamp:(NSDate *)timestamp
@@ -53,6 +72,14 @@ implicitPurchaseLoggingEnabled:(BOOL)implicitPurchaseLoggingEnabled
        sessionTimeoutInterval:(NSTimeInterval) sessionTimeoutInterval
                      defaults:(BOOL)defaults
                  loggingToken:(NSString *)loggingToken
+            smartLoginOptions:(FBSDKServerConfigurationSmartLoginOptions)smartLoginOptions
+    smartLoginBookmarkIconURL:(NSURL *)smartLoginBookmarkIconURL
+        smartLoginMenuIconURL:(NSURL *)smartLoginMenuIconURL
+                updateMessage:(NSString *)updateMessage
+                eventBindings:(NSArray *)eventBindings
+            restrictiveParams:(NSDictionary<NSString *, id> *)restrictiveParams
+                     AAMRules:(NSDictionary<NSString *, id> *)AAMRules
+       suggestedEventsSetting:(NSDictionary<NSString *, id> *)suggestedEventsSetting
 NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, assign, readonly, getter=isAdvertisingIDEnabled) BOOL advertisingIDEnabled;
@@ -63,13 +90,24 @@ NS_DESIGNATED_INITIALIZER;
 @property (nonatomic, strong, readonly) FBSDKErrorConfiguration *errorConfiguration;
 @property (nonatomic, assign, readonly, getter=isImplicitLoggingSupported) BOOL implicitLoggingEnabled;
 @property (nonatomic, assign, readonly, getter=isImplicitPurchaseLoggingSupported) BOOL implicitPurchaseLoggingEnabled;
+@property (nonatomic, assign, readonly, getter=isCodelessEventsEnabled) BOOL codelessEventsEnabled;
 @property (nonatomic, assign, readonly, getter=isLoginTooltipEnabled) BOOL loginTooltipEnabled;
 @property (nonatomic, assign, readonly, getter=isNativeAuthFlowEnabled) BOOL nativeAuthFlowEnabled;
 @property (nonatomic, assign, readonly, getter=isSystemAuthenticationEnabled) BOOL systemAuthenticationEnabled;
+@property (nonatomic, assign, readonly, getter=isUninstallTrackingEnabled) BOOL uninstallTrackingEnabled;
 @property (nonatomic, copy, readonly) NSString *loginTooltipText;
 @property (nonatomic, copy, readonly) NSDate *timestamp;
 @property (nonatomic, assign) NSTimeInterval sessionTimoutInterval;
 @property (nonatomic, copy, readonly) NSString *loggingToken;
+@property (nonatomic, assign, readonly) FBSDKServerConfigurationSmartLoginOptions smartLoginOptions;
+@property (nonatomic, copy, readonly) NSURL *smartLoginBookmarkIconURL;
+@property (nonatomic, copy, readonly) NSURL *smartLoginMenuIconURL;
+@property (nonatomic, copy, readonly) NSString *updateMessage;
+@property (nonatomic, copy, readonly) NSArray *eventBindings;
+@property (nonatomic, copy, readonly) NSDictionary<NSString *, id> *restrictiveParams;
+@property (nonatomic, copy, readonly) NSDictionary<NSString *, id> *AAMRules;
+@property (nonatomic, copy, readonly) NSDictionary<NSString *, id> *suggestedEventsSetting;
+@property (nonatomic, readonly) NSInteger version;
 
 - (FBSDKDialogConfiguration *)dialogConfigurationForDialogName:(NSString *)dialogName;
 - (BOOL)useNativeDialogForDialogName:(NSString *)dialogName;
