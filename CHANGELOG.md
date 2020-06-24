@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 1.1.1 *(4th June, 2020)*
+-------------------------------------------
+
+* Relaxes Segment Analytics library dependency.
+
 Version 1.1.0 *(18th November, 2019)*
 -------------------------------------------
 
