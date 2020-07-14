@@ -13,6 +13,12 @@
         
         NSString *appId = [settings objectForKey:@"appId"];
         [FBSDKSettings setAppID:appId];
+
+        if ([(NSNumber *)self.settings[@"limitedDataUse"] boolValue]) {
+            [FBSDKSettings setDataProcessingOptions:@[@"LDU"] country:0 state:0]; 
+        } else {
+            [FBSDKSettings setDataProcessingOptions:@[]];
+        }
     }
     return self;
 }
