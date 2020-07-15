@@ -1,0 +1,6 @@
+module Pods_Segment_Facebook_Example {
+  umbrella header "Pods-Segment-Facebook_Example-umbrella.h"
+
+  export *
+  module * { export * }
+}

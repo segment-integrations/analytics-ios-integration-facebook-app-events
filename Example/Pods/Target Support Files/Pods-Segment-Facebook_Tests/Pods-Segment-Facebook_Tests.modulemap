@@ -1,0 +1,6 @@
+framework module Pods_Segment_Facebook_Tests {
+  umbrella header "Pods-Segment-Facebook_Tests-umbrella.h"
+
+  export *
+  module * { export * }
+}
