@@ -1,6 +1,8 @@
 platform :ios, '8.0'
 
 target 'Segment-Facebook_Example' do
+  use_frameworks!
+
   pod 'Segment-Facebook-App-Events', :path => '../'
 
   target 'Segment-Facebook_Tests' do
