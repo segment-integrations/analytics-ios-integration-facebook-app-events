@@ -5,7 +5,7 @@ target 'Segment-Facebook_Example' do
 
   target 'Segment-Facebook_Tests' do
     inherit! :search_paths
-    use_frameworks!
+    # use_frameworks!
 
     pod 'Specta'
     pod 'Expecta'
