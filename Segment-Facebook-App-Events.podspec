@@ -22,7 +22,7 @@ Pod::Spec.new do |s|
   s.source_files = 'Pod/Classes/**/*'
 
   s.dependency 'Analytics'
-  s.dependency 'FBSDKCoreKit', '~> 5.10.0'
+  s.dependency 'FBSDKCoreKit', '~> 7.1.1'
 
   s.pod_target_xcconfig = { 'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES' }
 end
