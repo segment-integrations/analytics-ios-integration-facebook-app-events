@@ -18,15 +18,8 @@
     [SEGAnalytics debug:YES];
     SEGAnalyticsConfiguration *config = [SEGAnalyticsConfiguration configurationWithWriteKey:@"gnjyuUpq7mZYtLM76mwltoiZcDsFpnfY"];
     
-    // Init the FB integration SDK
-    SEGFacebookAppEventsIntegrationFactory *fb = [SEGFacebookAppEventsIntegrationFactory instance];
-
-    // Optional - Set the data processing options to override the default options of
-    // [['LDU'], 0, 0]
-    //    [fb setDataProcessingOptions:@[ @"UDL" ] forCountry:99 forState: 99];
-
-    // Add the bundle FB integration SDK
-    [config use:fb];
+    // Add any of your bundled integrations.
+    [config use:[SEGFacebookAppEventsIntegrationFactory instance]];
     
     [SEGAnalytics setupWithConfiguration:config];
     

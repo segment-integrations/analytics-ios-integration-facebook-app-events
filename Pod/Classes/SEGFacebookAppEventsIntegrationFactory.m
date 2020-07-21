@@ -19,20 +19,9 @@
     return self;
 }
 
-- (id)setDataProcessingOptions:(NSArray<NSString *> *)options forCountry:(int *)country forState:(int *)state
-{
-    self.dataProcessingOptions = options;
-    self.dataProcessingCountry = country;
-    self.dataProcessingState = state;
-    return self;
-}
-
 - (id<SEGIntegration>)createWithSettings:(NSDictionary *)settings forAnalytics:(SEGAnalytics *)analytics
 {
-    return [[SEGFacebookAppEventsIntegration alloc] initWithSettings:settings
-                                                    dataProcessingOptions:self.dataProcessingOptions
-                                                    dataProcessingCountry:self.dataProcessingCountry
-                                                    dataProcessingState:self.dataProcessingState];
+    return [[SEGFacebookAppEventsIntegration alloc] initWithSettings:settings];
 }
 
 - (NSString *)key

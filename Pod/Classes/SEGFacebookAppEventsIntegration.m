@@ -6,27 +6,20 @@
 
 #pragma mark - Initialization
 
-- (id)initWithSettings:(NSDictionary *)settings dataProcessingOptions:(NSArray<NSString *> *)options dataProcessingCountry:(int *)country dataProcessingState:(int *)state
+- (id)initWithSettings:(NSDictionary *)settings
 {
     if (self = [super init]) {
         self.settings = settings;
-        self.dataProcessingOptions = options;
-        self.dataProcessingCountry = country;
-        self.dataProcessingState = state;
         
         NSString *appId = [settings objectForKey:@"appId"];
         [FBSDKSettings setAppID:appId];
 
         if ([(NSNumber *)self.settings[@"limitedDataUse"] boolValue]) {
-            NSArray<NSString *> *options = self.dataProcessingOptions ? self.dataProcessingOptions : @[@"LDU"];
-            int *country = self.dataProcessingCountry ? self.dataProcessingCountry : 0;
-            int *state = self.dataProcessingState ? self.dataProcessingState : 0;
-
-            [FBSDKSettings setDataProcessingOptions:options country:country state:state]; 
-            SEGLog(@"[FBSDKSettings setDataProcessingOptions:[%@] country:%d state:%d", [options componentsJoinedByString:@","], country, state);
+            [FBSDKSettings setDataProcessingOptions:@[@"LDU"] country:0 state:0]; 
+            SEGLog(@"[FBSDKSettings setDataProcessingOptions:['LDU'] country:0 state:0");
         } else {
-            [FBSDKSettings setDataProcessingOptions:@[]];
             SEGLog(@"[FBSDKSettings setDataProcessingOptions:[]");
+            [FBSDKSettings setDataProcessingOptions:@[]];
         }
     }
     return self;
