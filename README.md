@@ -34,6 +34,20 @@ SEGAnalyticsConfiguration *config = [SEGAnalyticsConfiguration configurationWith
 
 ```
 
+### Data Processing Options
+  To override the Data Processing Options when the Limited Data Use destination setting is enabled, call the `setDataProcessingOptions`
+  method when initializing the FB App Events integration SDK. For example:
+  ```
+    SEGFacebookAppEventsIntegrationFactory *fb = [SEGFacebookAppEventsIntegrationFactory instance];
+
+    // Optional - Set the Data Processing Options to override the default options of [['LDU'], 0, 0]
+    [fb setDataProcessingOptions:@[ @"LDU" ] forCountry:1 forState: 1000];
+
+    // Add the bundle FB integration SDK
+    [config use:fb];
+  ```
+For more information on Facebook's Data Processing Options, reference their documentation: https://developers.facebook.com/docs/marketing-apis/data-processing-options#mobile-sdks
+
 ## License
 
 ```
