@@ -1,3 +1,5 @@
+platform :ios, '9.0'
+
 target 'Segment-Facebook_Example' do
   pod 'Segment-Facebook-App-Events', :path => '../'
 

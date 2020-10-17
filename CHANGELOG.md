@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Unreleased
+-------------------------------------------
+* Update FBSDKCoreKit to 8.0.0
+  Minimum iOS deployment target is now 9.0 (see https://github.com/facebook/facebook-ios-sdk/blob/master/CHANGELOG.md#800)
+
 Version 2.0.01 *(7th October, 2020)*
 -------------------------------------------
 * Update SEGAnalytics import to support new namespacing introduced in v4.x
@@ -8,7 +13,7 @@ Version 2.0.01 *(7th October, 2020)*
 Version 2.0.0 *(31st July, 2020)*
 -------------------------------------------
 
-* Update FDSDKCoreKit to 7.1.1
+* Update FBSDKCoreKit to 7.1.1
 * Update Cocoapods version
 * Implement the new Limited Data Use Segment destination setting which is disabled by default. When enabled, the FB App Events integration
   will enable Limited Data Use mode in the FB iOS SDK and request that Facebook auto-geolocate the event in the
