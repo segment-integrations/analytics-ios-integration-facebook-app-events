@@ -11,7 +11,7 @@
 
 #pragma mark - Initialization
 
-- (id)initWithSettings:(NSDictionary *)settings dataProcessingOptions:(NSArray<NSString *> *)options dataProcessingCountry:(int *)country dataProcessingState:(int *)state
+- (id)initWithSettings:(NSDictionary *)settings dataProcessingOptions:(NSArray<NSString *> *)options dataProcessingCountry:(int)country dataProcessingState:(int)state
 {
     if (self = [super init]) {
         self.settings = settings;
@@ -24,8 +24,8 @@
 
         if ([(NSNumber *)self.settings[@"limitedDataUse"] boolValue]) {
             NSArray<NSString *> *options = self.dataProcessingOptions ? self.dataProcessingOptions : @[@"LDU"];
-            int *country = self.dataProcessingCountry ? self.dataProcessingCountry : 0;
-            int *state = self.dataProcessingState ? self.dataProcessingState : 0;
+            int country = self.dataProcessingCountry ? self.dataProcessingCountry : 0;
+            int state = self.dataProcessingState ? self.dataProcessingState : 0;
 
             [FBSDKSettings setDataProcessingOptions:options country:country state:state]; 
             SEGLog(@"[FBSDKSettings setDataProcessingOptions:[%@] country:%d state:%d", [options componentsJoinedByString:@","], country, state);

@@ -19,7 +19,7 @@
     return self;
 }
 
-- (id)setDataProcessingOptions:(NSArray<NSString *> *)options forCountry:(int *)country forState:(int *)state
+- (id)setDataProcessingOptions:(NSArray<NSString *> *)options forCountry:(int)country forState:(int)state
 {
     self.dataProcessingOptions = options;
     self.dataProcessingCountry = country;
