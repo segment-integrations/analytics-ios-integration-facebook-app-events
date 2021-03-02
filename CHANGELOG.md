@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 2.1.0 *(2nd March, 2021)*
+-------------------------------------------
+* Updated FBSDKCoreKit to 9.x.
+* Changed country/state values to be `int` from `int *`.  Still compatible but removes warnings.
+ 
 Version 2.0.01 *(7th October, 2020)*
 -------------------------------------------
 * Update SEGAnalytics import to support new namespacing introduced in v4.x
