@@ -60,9 +60,9 @@
 		6003F5B9195388D20070C39A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		6003F5BB195388D20070C39A /* Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tests.m; sourceTree = "<group>"; };
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
+		62B0A50F2639DA0D00A2D60D /* Segment-Facebook-App-Events.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; name = "Segment-Facebook-App-Events.podspec"; path = "../Segment-Facebook-App-Events.podspec"; sourceTree = "<group>"; };
 		63970E20BBB27C93FFC1A124 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		9DD00AE919B32F045503E9A7 /* Segment-Facebook.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = "Segment-Facebook.podspec"; path = "../Segment-Facebook.podspec"; sourceTree = "<group>"; };
 		B5A9D5BD4BA55A0B88346E2E /* libPods-Segment-Facebook_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Segment-Facebook_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC0CE43EFCF167B3E7CD428F /* Pods-Segment-Facebook_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Segment-Facebook_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Segment-Facebook_Tests/Pods-Segment-Facebook_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		CC0DF99995B39C5E4F8EDEF7 /* libPods-Segment-Facebook_Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Segment-Facebook_Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -180,7 +180,7 @@
 		60FF7A9C1954A5C5007DD14C /* Podspec Metadata */ = {
 			isa = PBXGroup;
 			children = (
-				9DD00AE919B32F045503E9A7 /* Segment-Facebook.podspec */,
+				62B0A50F2639DA0D00A2D60D /* Segment-Facebook-App-Events.podspec */,
 				40DDFBAC33B19BB1D16E0F12 /* README.md */,
 				63970E20BBB27C93FFC1A124 /* LICENSE */,
 			);
