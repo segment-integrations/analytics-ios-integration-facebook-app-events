@@ -16,13 +16,13 @@ Pod::Spec.new do |s|
   s.source           = { :git => "https://github.com/segment-integrations/analytics-ios-integration-facebook-app-events.git", :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/segment'
 
-  s.platform     = :ios, '9.0'
+  s.platform     = :ios, '10.0'
   s.requires_arc = true
 
   s.source_files = 'Pod/Classes/**/*'
 
   s.dependency 'Analytics'
-  s.dependency 'FBSDKCoreKit', '~> 9.2'
+  s.dependency 'FBSDKCoreKit', '~> 11.0.0'
 
   s.pod_target_xcconfig = { 'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES' }
 end

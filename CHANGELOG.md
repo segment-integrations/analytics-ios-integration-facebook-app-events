@@ -1,5 +1,9 @@
 Change Log
 ==========
+Version 2.1.2 *(21st June, 2021)*
+-------------------------------------------
+* Updated FBSDKCoreKit to 11.0.0
+
 Version 2.1.1 *(28nd April, 2021)*
 -------------------------------------------
 * Updated FBSDKCoreKit to 9.2.
