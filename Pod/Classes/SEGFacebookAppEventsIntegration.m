@@ -37,6 +37,36 @@
     return self;
 }
 
++ (NSDictionary *)extractParameters: (NSDictionary *)properties
+{
+    // Facebook only accepts properties/parameters that have an NSString key, and an NSString or NSNumber as a value.
+    // ... so we need to strip out everything else.  Not doing so results in a refusal to send and an
+    // error in the console from the FBSDK.
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    [properties enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        NSString *propKey = nil;
+        NSString *propValue = nil;
+        
+        // this shouldn't ever fail, but just in case ...
+        if ([key isKindOfClass:[NSString class]]) {
+            propKey = key;
+        }
+        
+        // only accept it if it's one of these types ...
+        if ([obj isKindOfClass:[NSString class]] || [obj isKindOfClass:[NSNumber class]]) {
+            propValue = obj;
+        }
+        
+        // if we have both, put them in our output ...
+        if (propKey && propValue) {
+            [result setObject:propValue forKey:propKey];
+        }
+    }];
+    
+    return result;
+}
+
+
 + (NSNumber *)extractRevenue:(NSDictionary *)dictionary withKey:(NSString *)revenueKey
 {
     id revenueProperty = nil;
@@ -90,15 +120,15 @@
             NSMutableDictionary *properties = [payload.properties mutableCopy];
             [properties setObject:currency forKey:FBSDKAppEventParameterNameCurrency];
             [FBSDKAppEvents.shared logEvent:truncatedEvent
-                            valueToSum:[revenue doubleValue]
-                            parameters:properties];
+                                 valueToSum:[revenue doubleValue]
+                                 parameters:[SEGFacebookAppEventsIntegration extractParameters:properties]];
             
             // Purchase event
-            [FBSDKAppEvents.shared logPurchase:[revenue doubleValue] currency:currency parameters:properties];
+            [FBSDKAppEvents.shared logPurchase:[revenue doubleValue] currency:currency parameters:[SEGFacebookAppEventsIntegration extractParameters:properties]];
         }
         else {
             [FBSDKAppEvents.shared logEvent:truncatedEvent
-                            parameters:payload.properties];
+                                 parameters:[SEGFacebookAppEventsIntegration extractParameters:payload.properties]];
         }
     }];
 }
