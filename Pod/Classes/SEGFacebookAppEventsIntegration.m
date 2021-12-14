@@ -118,9 +118,12 @@
 
 - (void)applicationDidBecomeActive
 {
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
-        [FBSDKApplicationDelegate.sharedInstance initializeSDK];
-    }];
+    static dispatch_once_t once;
+    dispatch_once(&once, ^ {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+            [FBSDKApplicationDelegate.sharedInstance initializeSDK];
+        }];
+    });
 }
 
 @end
