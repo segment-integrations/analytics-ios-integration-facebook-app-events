@@ -86,14 +86,15 @@
         NSNumber *revenue = [SEGFacebookAppEventsIntegration extractRevenue:payload.properties withKey:@"revenue"];
         NSString *currency = [SEGFacebookAppEventsIntegration extractCurrency:payload.properties withKey:@"currency"];
         if (revenue) {
-            [FBSDKAppEvents.shared logPurchase:[revenue doubleValue] currency:currency];
-        
             // Custom event
             NSMutableDictionary *properties = [payload.properties mutableCopy];
             [properties setObject:currency forKey:FBSDKAppEventParameterNameCurrency];
             [FBSDKAppEvents.shared logEvent:truncatedEvent
                             valueToSum:[revenue doubleValue]
                             parameters:properties];
+            
+            // Purchase event
+            [FBSDKAppEvents.shared logPurchase:[revenue doubleValue] currency:currency parameters:properties];
         }
         else {
             [FBSDKAppEvents.shared logEvent:truncatedEvent
