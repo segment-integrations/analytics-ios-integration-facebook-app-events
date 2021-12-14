@@ -1,16 +1,15 @@
 PODS:
-  - Analytics (4.1.4)
+  - Analytics (4.1.6)
   - Expecta (1.0.6)
-  - FBSDKCoreKit (11.0.0):
-    - FBSDKCoreKit/Core (= 11.0.0)
-  - FBSDKCoreKit/Core (11.0.0):
-    - FBSDKCoreKit_Basics (~> 11.0.0)
-  - FBSDKCoreKit_Basics (11.0.0):
-    - FBSDKCoreKit_Basics/Basics (= 11.0.0)
-  - FBSDKCoreKit_Basics/Basics (11.0.0)
-  - Segment-Facebook-App-Events (2.1.1):
+  - FBAEMKit (12.2.1):
+    - FBSDKCoreKit_Basics (= 12.2.1)
+  - FBSDKCoreKit (12.2.1):
+    - FBAEMKit (= 12.2.1)
+    - FBSDKCoreKit_Basics (= 12.2.1)
+  - FBSDKCoreKit_Basics (12.2.1)
+  - Segment-Facebook-App-Events (2.1.2):
     - Analytics
-    - FBSDKCoreKit (~> 11.0.0)
+    - FBSDKCoreKit (~> 12.0)
   - Specta (1.0.7)
 
 DEPENDENCIES:
@@ -22,6 +21,7 @@ SPEC REPOS:
   trunk:
     - Analytics
     - Expecta
+    - FBAEMKit
     - FBSDKCoreKit
     - FBSDKCoreKit_Basics
     - Specta
@@ -31,13 +31,14 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Analytics: 7bdc735c456434b4eaa2eacdcf122bb03d51ede7
+  Analytics: eefe524436f904b8bb3f8c8c3425280e43b34efc
   Expecta: 3b6bd90a64b9a1dcb0b70aa0e10a7f8f631667d5
-  FBSDKCoreKit: 3e6f565de8b4fbe11f8ee5d499f5898b0bde2cdd
-  FBSDKCoreKit_Basics: 9cf699662174870962deb39f07a5d70d4594c4b7
-  Segment-Facebook-App-Events: 592f7f9682d687f6e1ed98e2606a33318ad49520
+  FBAEMKit: 4cea610d0bc1680572f2aad7b25db7a2f2690d82
+  FBSDKCoreKit: 5b1992fe65802ca26be7e68bc4fac5f59fa39908
+  FBSDKCoreKit_Basics: a6a92ca628e05f86f458a4721574c5ddfb058ba3
+  Segment-Facebook-App-Events: f2276c3dfe05f8cc50165a9acf88a8cef76643ec
   Specta: 3e1bd89c3517421982dc4d1c992503e48bd5fe66
 
 PODFILE CHECKSUM: c8ea55925a4f8c6c4bc2e1f8de7af4fd1ee2d29b
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.11.2
