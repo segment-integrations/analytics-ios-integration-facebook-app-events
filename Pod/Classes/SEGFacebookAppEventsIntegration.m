@@ -1,18 +1,38 @@
 #import "SEGFacebookAppEventsIntegration.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
+
+#if defined(__has_include) && __has_include(<Analytics/SEGAnalytics.h>)
 #import <Analytics/SEGAnalyticsUtils.h>
+#else
+#import <Segment/SEGAnalyticsUtils.h>
+#endif
 
 @implementation SEGFacebookAppEventsIntegration
 
 #pragma mark - Initialization
 
-- (id)initWithSettings:(NSDictionary *)settings
+- (id)initWithSettings:(NSDictionary *)settings dataProcessingOptions:(NSArray<NSString *> *)options dataProcessingCountry:(int)country dataProcessingState:(int)state
 {
     if (self = [super init]) {
         self.settings = settings;
+        self.dataProcessingOptions = options;
+        self.dataProcessingCountry = country;
+        self.dataProcessingState = state;
         
         NSString *appId = [settings objectForKey:@"appId"];
-        [FBSDKSettings setAppID:appId];
+        [FBSDKSettings.sharedSettings setAppID:appId];
+
+        if ([(NSNumber *)self.settings[@"limitedDataUse"] boolValue]) {
+            NSArray<NSString *> *options = self.dataProcessingOptions ? self.dataProcessingOptions : @[@"LDU"];
+            int country = self.dataProcessingCountry ? self.dataProcessingCountry : 0;
+            int state = self.dataProcessingState ? self.dataProcessingState : 0;
+
+            [FBSDKSettings.sharedSettings setDataProcessingOptions:options country:country state:state];
+            SEGLog(@"[FBSDKSettings setDataProcessingOptions:[%@] country:%d state:%d", [options componentsJoinedByString:@","], country, state);
+        } else {
+            [FBSDKSettings.sharedSettings setDataProcessingOptions:@[]];
+            SEGLog(@"[FBSDKSettings setDataProcessingOptions:[]");
+        }
     }
     return self;
 }
@@ -69,15 +89,15 @@
             // Custom event
             NSMutableDictionary *properties = [payload.properties mutableCopy];
             [properties setObject:currency forKey:FBSDKAppEventParameterNameCurrency];
-            [FBSDKAppEvents logEvent:truncatedEvent
+            [FBSDKAppEvents.shared logEvent:truncatedEvent
                             valueToSum:[revenue doubleValue]
                             parameters:properties];
             
             // Purchase event
-            [FBSDKAppEvents logPurchase:[revenue doubleValue] currency:currency parameters:properties];
+            [FBSDKAppEvents.shared logPurchase:[revenue doubleValue] currency:currency parameters:properties];
         }
         else {
-            [FBSDKAppEvents logEvent:truncatedEvent
+            [FBSDKAppEvents.shared logEvent:truncatedEvent
                             parameters:payload.properties];
         }
     }];
@@ -90,7 +110,7 @@
         // 'Viewed' and 'Screen' with spaces take up 14
         NSString *truncatedEvent = [payload.name substringToIndex: MIN(26, [payload.name length])];
         NSString *event = [[NSString alloc] initWithFormat:@"Viewed %@ Screen", truncatedEvent];
-        [FBSDKAppEvents logEvent:event];
+        [FBSDKAppEvents.shared logEvent:event];
     }];
     
 }
@@ -99,9 +119,12 @@
 
 - (void)applicationDidBecomeActive
 {
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
-        [FBSDKAppEvents activateApp];
-    }];
+    static dispatch_once_t once;
+    dispatch_once(&once, ^ {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+            [FBSDKApplicationDelegate.sharedInstance initializeSDK];
+        }];
+    });
 }
 
 @end
