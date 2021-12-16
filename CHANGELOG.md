@@ -1,5 +1,12 @@
 Change Log
 ==========
+
+Version 2.1.3 *(16th December, 2021)*
+-------------------------------------------
+* Updated FBSDKCoreKit to 12.x
+* Filter properties such that only String/Number values make it to parameters.
+* Start sending parameters in logPurchase event.
+
 Version 2.1.2 *(21st June, 2021)*
 -------------------------------------------
 * Updated FBSDKCoreKit to 11.0.0
