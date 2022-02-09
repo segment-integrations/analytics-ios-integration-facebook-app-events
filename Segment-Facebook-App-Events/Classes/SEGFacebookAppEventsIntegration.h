@@ -2,7 +2,7 @@
 #if defined(__has_include) && __has_include(<Analytics/SEGAnalytics.h>)
 #import <Analytics/SEGIntegration.h>
 #else
-#import <Segment/SEGIntegration.h>
+@import Segment;
 #endif
 
 @interface SEGFacebookAppEventsIntegration : NSObject<SEGIntegration>

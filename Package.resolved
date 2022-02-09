@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Segment",
+        "repositoryURL": "https://github.com/segmentio/analytics-ios.git",
+        "state": {
+          "branch": null,
+          "revision": "fc64997865619f73bbab196c164f7845a13da110",
+          "version": "4.1.6"
+        }
+      },
+      {
+        "package": "Facebook",
+        "repositoryURL": "https://github.com/facebook/facebook-ios-sdk",
+        "state": {
+          "branch": null,
+          "revision": "e14f349945ba3f9516e3292107f42be19fe9fbe5",
+          "version": "12.3.2"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

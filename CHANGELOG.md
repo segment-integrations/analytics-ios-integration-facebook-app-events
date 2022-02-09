@@ -1,5 +1,8 @@
 Change Log
 ==========
+Version 2.2.0 *(9th Feburary, 2022)*
+-------------------------------------------
+* Added Swift Package Manager support.
 
 Version 2.1.3 *(16th December, 2021)*
 -------------------------------------------
