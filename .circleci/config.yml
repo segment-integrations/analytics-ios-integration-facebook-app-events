@@ -3,7 +3,7 @@ version: 2
 jobs:
   build_and_test:
     macos:
-      xcode: "11.5.0"
+      xcode: "12.0"
     steps:
       - checkout
       - run: xcrun simctl list
@@ -11,7 +11,7 @@ jobs:
           name: Install build dependencies
           command: |
             sudo gem install xcpretty
-            sudo gem install cocoapods -v 1.8.4
+            sudo gem install cocoapods -v 1.11.2
 
       - run: make install
       - run: make build
